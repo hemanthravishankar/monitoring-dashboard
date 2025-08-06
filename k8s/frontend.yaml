@@ -7,6 +7,7 @@ metadata:
     app: monitoring-dashboard
     microservice: frontend
     env: dev
+    new: value
 spec:
   replicas: 1
   selector:
