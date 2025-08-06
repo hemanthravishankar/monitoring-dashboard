@@ -39,3 +39,27 @@ jobs:
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}
+
+
+  backend-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Decode and configure Kubeconfig
+        run: |
+          echo "$KUBECONFIG_BASE64" | base64 -d > kubeconfig
+          echo "KUBECONFIG=$PWD/kubeconfig" >> $GITHUB_ENV
+        env:
+          KUBECONFIG_BASE64: ${{ secrets.KUBECONFIG_BASE64 }}
+
+      - name: Deploy Backend
+        run: |
+          kubectl set image deployment/backend backend=${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }} -n monitoring-app
