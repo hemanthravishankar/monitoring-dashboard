@@ -74,7 +74,7 @@ jobs:
   backend-deploy:
     runs-on: self-hosted
     needs: [update-deployment-pr]
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true # Trigger only on merged PRs
+    if: github.event.pull_request.merged == true # Trigger only on merged PRs
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
