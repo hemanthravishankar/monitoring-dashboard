@@ -47,7 +47,7 @@ jobs:
   update-deployment-pr:
     runs-on: ubuntu-latest
     needs: backend-ci # This job depends on a successful backend-ci job
-    if: github.event_name == 'pull_request' && github.ref == 'main'
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     permissions:
       contents: write # Needed to create and commit changes
       pull-requests: write # Needed to create a pull request
@@ -72,7 +72,7 @@ jobs:
 
   backend-deploy:
     runs-on: self-hosted
-    needs: [backend-ci, update-deployment-pr]
+    needs: [update-deployment-pr]
     if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true # Trigger only on merged PRs
     steps:
       - name: Checkout code
