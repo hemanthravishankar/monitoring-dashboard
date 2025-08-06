@@ -5,12 +5,14 @@ on:
       - '**'
     paths:
       - 'backend/**'
+      - 'k8s/backend/deployment.yaml'
   pull_request:
     types: [opened, synchronize, reopened, closed]  # ✅ INCLUDE 'closed'
     branches:
       - main
     paths:
       - 'backend/**'
+      - 'k8s/backend/deployment.yaml'
 
 jobs:
   backend-ci:
@@ -74,7 +76,7 @@ jobs:
   backend-deploy:
     runs-on: self-hosted
     needs: [update-deployment-pr]
-    if: github.event.pull_request.merged == true # Trigger only on merged PRs
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -93,4 +95,4 @@ jobs:
 
       - name: Deploy Backend
         run: |
-          kubectl apply -f ./k8s/backend/
+          kubectl apply -f ./k8s/backend/ -n monitoring-app
