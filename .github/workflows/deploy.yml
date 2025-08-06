@@ -29,8 +29,8 @@ jobs:
 
       - name: Deploy Backend
         run: |
-          kubectl set image deployment/backend backend=${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:${{ github.sha }} -n monitoring-app
+          kubectl set image deployment/backend backend=${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }} -n monitoring-app
 
       - name: Deploy Frontend
         run: |
-          kubectl set image deployment/frontend frontend=${{ secrets.DOCKER_USERNAME }}/project_assignment_frontend:${{ github.sha }} -n monitoring-app
+          kubectl set image deployment/frontend frontend=${{ secrets.DOCKER_USERNAME }}/project_assignment_frontend:frontend-${{ github.sha }} -n monitoring-app

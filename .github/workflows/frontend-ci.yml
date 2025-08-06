@@ -38,10 +38,10 @@ jobs:
         run: npm test || echo "No tests available"
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/project_assignment_frontend:${{ github.sha }} .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/project_assignment_frontend:frontend-${{ github.sha }} .
 
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/project_assignment_frontend:${{ github.sha }}
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/project_assignment_frontend:frontend-${{ github.sha }}
