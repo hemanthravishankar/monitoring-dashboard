@@ -1,0 +1,13 @@
+# Node dependencies
+frontend/node_modules/
+frontend/dist/
+
+# Go build artifacts
+backend/server
+
+# Environment/Secrets
+*.env
+*.log
+
+# OS files
+.DS_Store

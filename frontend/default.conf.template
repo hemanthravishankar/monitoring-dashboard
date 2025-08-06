@@ -1,0 +1,22 @@
+# ✅ Define an HTTP server that listens on port 80
+server {
+  listen 80;
+
+  # 🔹 Handle requests for the frontend (React/Vite SPA)
+  location / {
+    root /usr/share/nginx/html;          # Serve files from the frontend build output
+    index index.html;                    # Default file to serve
+    try_files $uri $uri/ /index.html;    # SPA fallback: redirect unknown paths to index.html
+  }
+
+  # 🔹 Serve the dynamically generated env.js that contains runtime environment variables
+  location /env.js {
+    root /usr/share/nginx/html;
+  }
+
+  # 🔹 Reverse proxy API requests to the backend service
+  # The value `${BACKEND_BASE_URL}` will be injected at container runtime by entrypoint.sh
+  location /metrics {
+    proxy_pass ${BACKEND_BASE_URL};      # Replace with actual backend URL at runtime
+  }
+}

@@ -1,0 +1,24 @@
+# Ignore node_modules folder to avoid copying unnecessary dependencies
+node_modules
+
+# Ignore the build output folder (will be generated during image build)
+dist
+
+# Ignore all log files
+*.log
+
+# Ignore environment variable files (sensitive data should not be copied)
+*.env
+
+
+# Optional additions:
+.DS_Store                 # macOS hidden system files
+.vscode/                  # VS Code editor settings
+.idea/                    # JetBrains IDE project folder
+*.iml                     # IntelliJ module files
+npm-debug.log             # NPM debug logs
+yarn-error.log            # Yarn error logs
+.env.*                    # If using multiple env files like .env.development, .env.production
+coverage/                 # If you're running tests with coverage reports
+*.tsbuildinfo             # TypeScript incremental build info
+build/                    # Some setups use `build` instead of `dist`

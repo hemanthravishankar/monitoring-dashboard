@@ -1,0 +1,30 @@
+version: '3.9'  # ✅ Docker Compose file version
+
+services:
+  backend:
+    # build:
+    #   context: ./backend  # 🔧 Build the backend from this directory
+    image: shankar0/project_assignment_backend:1.0.0
+    container_name: backend  # 🏷 Name the backend container
+    ports:
+      - "5000:5000"  # 🌐 Expose backend on localhost:5000
+    networks:
+      - appnet  # 🔗 Connect to the shared network
+
+  frontend:
+    # build:
+    #   context: ./frontend  # 🔧 Build the frontend from this directory
+    image: shankar0/project_assignment_frontend:1.0.0
+    container_name: frontend  # 🏷 Name the frontend container
+    ports:
+      - "3000:80"  # 🌐 Expose frontend on localhost:3000
+    depends_on:
+      - backend  # 🕗 Ensure backend starts before frontend
+    environment:
+      - BACKEND_BASE_URL=http://backend:5000/metrics  # 🌍 Runtime API endpoint for frontend to call backend
+    networks:
+      - appnet  # 🔗 Connect to the same network
+
+networks:
+  appnet:
+    driver: bridge  # 🛣 Default Docker bridge network for inter-container communication

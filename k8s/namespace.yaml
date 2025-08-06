@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring-app
+  labels:
+    app: monitoring-dashboard
+    env: dev
+  annotations:
+    description: "This namespace is for the development environment."
