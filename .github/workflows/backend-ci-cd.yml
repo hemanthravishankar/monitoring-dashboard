@@ -6,6 +6,7 @@ on:
     paths:
       - 'backend/**'
   pull_request:
+    types: [opened, synchronize, reopened, closed]  # ✅ INCLUDE 'closed'
     branches:
       - main
     paths:
