@@ -6,6 +6,8 @@ on:
     paths:
       - 'backend/**'
   pull_request:
+    branches:
+      - main
     paths:
       - 'backend/**'
 
@@ -34,16 +36,44 @@ jobs:
       - name: Build Docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }} .
 
-      - name: Login to Docker Hub
+      - name: 🔐 Login to Docker Hub
+        if: github.event_name == 'pull_request'
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: Push Docker image
+      - name: 📦 Push Docker Image (only on PR)
+        if: github.event_name == 'pull_request'
         run: docker push ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}
+
+  update-deployment-pr:
+    runs-on: ubuntu-latest
+    needs: backend-ci # This job depends on a successful backend-ci job
+    if: github.event_name == 'pull_request' && github.ref == 'main'
+    permissions:
+      contents: write # Needed to create and commit changes
+      pull-requests: write # Needed to create a pull request
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update deployment image
+        run: |
+          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}|" k8s/backend/deployment.yaml
+
+      - name: Create Pull Request for deployment update
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN
+          commit-message: "Update backend image to ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}"
+          title: "Automated: Update backend image to ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}"
+          body: "This PR updates the backend service image in `k8s/backend/deployment.yaml` to the newly built image `${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}`."
+          branch: "automated/update-backend-image-${{ github.sha }}" # Unique branch name for the PR
+          base: "main" # Target the 'main' branch
 
 
   backend-deploy:
     runs-on: self-hosted
-    needs: backend-ci
+    needs: [backend-ci, update-deployment-pr]
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true # Trigger only on merged PRs
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,4 +92,4 @@ jobs:
 
       - name: Deploy Backend
         run: |
-          kubectl set image deployment/backend backend=${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }} -n monitoring-app
+          kubectl apply -f ./k8s/backend/
