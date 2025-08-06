@@ -49,7 +49,7 @@ jobs:
 
   frontend-deploy:
     runs-on: self-hosted
-
+    needs: frontend-ci
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,7 +65,7 @@ jobs:
           echo "KUBECONFIG=$PWD/kubeconfig" >> $GITHUB_ENV
         env:
           KUBECONFIG_BASE64: ${{ secrets.KUBECONFIG_BASE64 }}
-          
+
       - name: Deploy Frontend
         run: |
           kubectl set image deployment/frontend frontend=${{ secrets.DOCKER_USERNAME }}/project_assignment_frontend:frontend-${{ github.sha }} -n monitoring-app

@@ -43,7 +43,7 @@ jobs:
 
   backend-deploy:
     runs-on: self-hosted
-
+    needs: backend-ci
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
