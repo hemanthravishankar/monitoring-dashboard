@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: shankar0/project_assignment_backend:backend-600af7d610daea103a6db03d7ca4cd2df616a6f5
+          image: shankar0/project_assignment_backend:backend-3ffe8d034fcb6cc802dddcfcb51468b69bcae4c6
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
