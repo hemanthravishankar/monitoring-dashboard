@@ -1,4 +1,4 @@
-name: Backend CD to Main
+name: Continuous Deployment on Local MiniKube
 
 on:
   push:
