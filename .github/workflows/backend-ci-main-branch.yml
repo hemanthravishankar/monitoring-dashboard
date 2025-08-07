@@ -16,7 +16,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    if: github.repository == 'hemanthravishankar/monitoring-dashboard'
     defaults:
       run:
         working-directory: backend
@@ -25,8 +25,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.sha }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -43,11 +42,9 @@ jobs:
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }} .
 
       - name: 🔐 Login to Docker Hub
-        if: github.repository == 'hemanthravishankar/monitoring-dashboard'
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: 📦 Push Docker Image
-        if: github.repository == 'hemanthravishankar/monitoring-dashboard'
         run: docker push ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}
 
   update-deployment-pr:
