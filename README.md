@@ -11,6 +11,65 @@
 - **Orchestration**: Kubernetes + Minikube → Simulates production-grade infra.
 - **CI/CD**: GitHub Actions → Built-in, integrates well with GitHub PRs and pushes.
 
+# ✅ 1. Backend Design
+
+### 🔧 Tech Stack
+- **Language:** Go (Golang)
+- **Web Framework:** `net/http` (standard library)
+
+### 🧩 Responsibilities
+- Expose `/metrics` endpoint.
+- Generate and serve synthetic system metrics (CPU usage, memory, latency, etc.).
+- Handle CORS for frontend access.
+
+### 📦 Dockerization
+- **Multi-stage build**:
+  - **Stage 1:** Build Go binary in a `golang:alpine` container.
+  - **Stage 2:** Copy the binary into a minimal `alpine` image for a smaller runtime.
+
+### 🧪 Testing & Linting
+- Unit tests with `go test`.
+- Linting with `go vet`.
+- Gracefully handles missing linter/test configs using fallback logic in CI.
+
+---
+
+# ✅ 2. Frontend Design
+
+### 🔧 Tech Stack
+- **Framework:** React (via Vite)
+- **Visualization:** Recharts (to show live metric trends)
+
+### 🧩 Responsibilities
+- Poll backend `/metrics` every 10s.
+- Display metrics in cards and charts.
+
+### ⚙️ Runtime Configuration
+- Environment-agnostic design using:
+  - A `env.js` file generated at runtime by injecting `BACKEND_BASE_URL`.
+  - An NGINX config template with dynamic value replacement via `envsubst`.
+
+### 📦 Dockerization
+- **Multi-stage build**:
+  - **Stage 1:** `node` image to build the React app.
+  - **Stage 2:** `nginx:alpine` to serve the static site.
+- Uses a custom `entrypoint.sh` to inject runtime env into `env.js`.
+
+### 🧪 Testing & Linting
+- Basic `npm test` and optional `npm run lint` included.
+- Gracefully handles missing linter/test configs using fallback logic in CI.
+
+### 🛠 CI/CD
+- **CI:**
+  - Lint
+  - Run tests
+  - Build Docker image
+  - Push to Docker Hub
+  - Update `deployment.yaml` with new image tag
+- **CD:**
+  - Deploy frontend using `kubectl apply` on merge to `main`.
+
+
 ## 🚀 Local Deployment Guide
 
 ### 1. Clone the repo
