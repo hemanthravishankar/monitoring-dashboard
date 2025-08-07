@@ -5,7 +5,7 @@
 *.md
 
 # Ignore go.sum if not needed during build (recalculated by `go mod tidy`)
-go.sum
+# go.sum
 
 
 # Optional additions:
