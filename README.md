@@ -17,7 +17,7 @@
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/assignment.git
+git clone https://github.com/hemanthravishankar/monitoring-dashboard.git
 cd assignment
 ```
 
@@ -37,5 +37,32 @@ App accessible via Minikube service:
 minikube service frontend -n monitoring-app
 ```
 
+## 🔁 CI/CD Pipeline
 
 
+## 🔎 Accessing Services
+
+Frontend: http://localhost:3000 (Docker) or via minikube service
+
+Backend API: /metrics exposed on http://localhost:5000 (or internal via K8s)
+
+## 📜 Viewing Logs
+
+### Docker
+```bash
+docker logs backend
+docker logs frontend
+```
+
+### Kubernetes
+```bash
+kubectl logs -n monitoring-app deployment/backend
+kubectl logs -n monitoring-app deployment/frontend
+```
+
+## 🧯 Troubleshooting
+
+- Ensure Docker is running
+- Ensure Minikube cluster is started
+- Check logs using the commands above
+- Rebuild with docker-compose build --no-cache if issues persist
