@@ -7,3 +7,4 @@ metadata:
     env: dev
   annotations:
     description: "This namespace is for the development environment."
+    testingline: "newline"
