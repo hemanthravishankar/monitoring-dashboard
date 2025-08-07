@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: shankar0/project_assignment_frontend:1.0.0
+          image: shankar0/project_assignment_frontend:frontend-a5bc4fa038b051c00efa20909265c3386aa1e1f0
           imagePullPolicy: Always
           ports:
             - containerPort: 80
