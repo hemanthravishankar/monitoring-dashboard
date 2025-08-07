@@ -2,8 +2,7 @@
 
 ## 🖼 System Architecture
 
-![System Architecture](diagrams/architecture-diagram.png)
-
+![System Architecture](diagrams/)
 ## 🧰 Tech Stack & Reasoning
 
 - **Frontend**: React + Recharts → Lightweight & powerful for dashboards.
