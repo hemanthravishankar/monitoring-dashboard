@@ -73,7 +73,7 @@ jobs:
           commit-message: "Update backend image to ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}"
           title: "Automated: Update backend image to ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}"
           body: "This PR updates the backend service image in `k8s/backend/deployment.yaml` to the newly built image `${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}`."
-          branch: "automated/update-backend-image-${{ github.sha }}"
+          branch: "automated/update-backend-image"
           base: "main"
 
   backend-deploy:
