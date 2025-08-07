@@ -1,32 +1,33 @@
-name: Backend CI & CD
-
+name: Backend CI/CD to Main
 on:
-  push:
-    branches:
-      - '**'
-    paths:
-      - 'backend/**'
-      - 'k8s/backend/deployment.yaml'
-
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types: [opened, synchronize, reopened]
     branches:
       - main
     paths:
       - 'backend/**'
       - 'k8s/backend/deployment.yaml'
+  pull_request_target:
+    types: [closed]
+    branches:
+      - main
+    paths:
+      - 'k8s/backend/deployment.yaml'
 
 jobs:
-  backend-ci:
+  build-and-push:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     defaults:
       run:
         working-directory: backend
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -43,17 +44,17 @@ jobs:
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }} .
 
       - name: 🔐 Login to Docker Hub
-        if: github.event_name == 'pull_request'
+        if: github.repository == 'your-username/your-repo-name'
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: 📦 Push Docker Image (only on PR)
-        if: github.event_name == 'pull_request'
+      - name: 📦 Push Docker Image
+        if: github.repository == 'your-username/your-repo-name'
         run: docker push ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}
 
   update-deployment-pr:
     runs-on: ubuntu-latest
-    needs: backend-ci
-    if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.action != 'closed' && github.head_ref != 'automated/update-backend-image-${{ github.sha }}'
+    needs: build-and-push
+    if: github.event_name == 'pull_request' && github.event.action != 'closed' && github.repository == 'your-username/your-repo-name'
     permissions:
       contents: write
       pull-requests: write
@@ -71,14 +72,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Update backend image to ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}"
           title: "Automated: Update backend image to ${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}"
-          body: "This PR updates the backend image in `k8s/backend/deployment.yaml` to `${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}`."
+          body: "This PR updates the backend service image in `k8s/backend/deployment.yaml` to the newly built image `${{ secrets.DOCKER_USERNAME }}/project_assignment_backend:backend-${{ github.sha }}`."
           branch: "automated/update-backend-image-${{ github.sha }}"
           base: "main"
 
   backend-deploy:
     runs-on: self-hosted
     needs: update-deployment-pr
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    if: github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
