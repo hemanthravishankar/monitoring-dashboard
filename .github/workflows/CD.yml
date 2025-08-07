@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'k8s/backend/**'
+      - 'k8s/**'
 
 jobs:
   backend-deploy:
@@ -27,6 +27,6 @@ jobs:
         env:
           KUBECONFIG_BASE64: ${{ secrets.KUBECONFIG_BASE64 }}
 
-      - name: Deploy Backend
+      - name: Kubectl apply
         run: |
-          kubectl apply -f ./k8s/backend/ -n monitoring-app
+          kubectl apply -f ./k8s/ -n monitoring-app
