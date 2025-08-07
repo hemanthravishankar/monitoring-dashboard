@@ -1,4 +1,4 @@
-name: Backend CI/CD
+name: Backend CI MAIN BRANCH
 
 on:
   pull_request:

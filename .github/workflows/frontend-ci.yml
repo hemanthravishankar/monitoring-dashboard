@@ -1,4 +1,4 @@
-name: Backend CI
+name: FRONTEND CI
 on:
   push:
     branches-ignore:
